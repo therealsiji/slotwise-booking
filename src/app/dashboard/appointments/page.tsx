@@ -13,11 +13,25 @@ import {
 import { demoAppointments } from "@/lib/demo-data";
 import { getDb } from "@/lib/db";
 import { hasDatabaseConfig } from "@/lib/env";
-import { APPOINTMENT_STATUS } from "@/lib/constants";
+import { APPOINTMENT_STATUS, type AppointmentStatusValue } from "@/lib/constants";
 import { cancelAppointment } from "@/server/actions";
 import { getCurrentSlotWiseUser } from "@/server/user";
 
-async function loadAppointmentsData() {
+type AppointmentRow = {
+  id: string;
+  clientName: string;
+  clientEmail: string;
+  startDateTime: Date;
+  timezone: string;
+  status: AppointmentStatusValue;
+};
+
+type AppointmentsData = {
+  appointments: AppointmentRow[];
+  isDemo?: true;
+};
+
+async function loadAppointmentsData(): Promise<AppointmentsData> {
   if (!hasDatabaseConfig()) {
     return { appointments: demoAppointments, isDemo: true };
   }
@@ -71,7 +85,7 @@ export default async function AppointmentsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data.appointments.map((appointment) => (
+                {data.appointments.map((appointment: AppointmentRow) => (
                   <TableRow key={appointment.id}>
                     <TableCell>
                       <div className="font-medium">{appointment.clientName}</div>

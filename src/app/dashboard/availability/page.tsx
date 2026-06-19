@@ -17,7 +17,27 @@ import { getCurrentSlotWiseUser } from "@/server/user";
 
 const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-async function loadAvailabilityData() {
+type AvailabilityRuleRow = {
+  dayOfWeek: number;
+  startTime: string;
+  endTime: string;
+  isActive: boolean;
+};
+
+type AvailabilityBlockRow = {
+  id: string;
+  startDateTime: Date;
+  endDateTime: Date;
+  reason: string | null;
+};
+
+type AvailabilityData = {
+  rules: AvailabilityRuleRow[];
+  blocks: AvailabilityBlockRow[];
+  isDemo?: true;
+};
+
+async function loadAvailabilityData(): Promise<AvailabilityData> {
   if (!hasDatabaseConfig()) {
     return {
       rules: demoAvailabilityRules,
@@ -70,7 +90,9 @@ export default async function AvailabilityPage() {
         <CardContent>
           <form action={updateAvailabilityRules} className="grid gap-3">
             {days.map((day, dayOfWeek) => {
-              const rule = data.rules.find((item) => item.dayOfWeek === dayOfWeek);
+              const rule = data.rules.find(
+                (item: AvailabilityRuleRow) => item.dayOfWeek === dayOfWeek,
+              );
               const enabled = rule?.isActive ?? (dayOfWeek > 0 && dayOfWeek < 6);
 
               return (
@@ -137,7 +159,7 @@ export default async function AvailabilityPage() {
             {data.blocks.length === 0 ? (
               <p className="text-sm text-muted-foreground">No blocked times yet.</p>
             ) : (
-              data.blocks.map((block) => (
+              data.blocks.map((block: AvailabilityBlockRow) => (
                 <div
                   key={block.id}
                   className="flex items-center justify-between rounded-lg border p-3 text-sm"

@@ -5,9 +5,31 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { demoAppointments, demoUser } from "@/lib/demo-data";
 import { getDb } from "@/lib/db";
 import { hasDatabaseConfig } from "@/lib/env";
+import { type AppointmentStatusValue } from "@/lib/constants";
 import { getCurrentSlotWiseUser } from "@/server/user";
 
-async function loadDashboardData() {
+type DashboardUser = {
+  businessName: string | null;
+  name: string;
+  timezone: string;
+  bookingSlug: string;
+};
+
+type DashboardAppointment = {
+  id: string;
+  clientName: string;
+  startDateTime: Date;
+  endDateTime: Date;
+  status: AppointmentStatusValue;
+};
+
+type DashboardData = {
+  user: DashboardUser;
+  appointments: DashboardAppointment[];
+  isDemo?: true;
+};
+
+async function loadDashboardData(): Promise<DashboardData> {
   if (!hasDatabaseConfig()) {
     return { user: demoUser, appointments: demoAppointments, isDemo: true };
   }
@@ -30,7 +52,7 @@ export default async function DashboardPage() {
   const data = await loadDashboardData();
 
   const activeAppointments = data.appointments.filter(
-    (appointment) => appointment.status === "ACTIVE",
+    (appointment: DashboardAppointment) => appointment.status === "ACTIVE",
   );
 
   return (
@@ -74,7 +96,7 @@ export default async function DashboardPage() {
         </Card>
       </div>
       <AppointmentCalendar
-        appointments={data.appointments.map((appointment) => ({
+        appointments={data.appointments.map((appointment: DashboardAppointment) => ({
           id: appointment.id,
           title: appointment.clientName,
           start: appointment.startDateTime.toISOString(),
