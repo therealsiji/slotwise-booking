@@ -19,21 +19,39 @@ This app uses **Supabase Postgres** as the database and **Prisma** as the ORM.
 
 1. Create a Supabase project.
 2. In Supabase, open **Project Settings > Database > Connection string**.
-3. Copy the Postgres connection string.
+3. Copy the **Transaction Pooler** connection string for `DATABASE_URL`.
+4. Copy the **Direct connection** string for `DATABASE_DIRECT_URL`.
 4. Create `.env` from `.env.example`.
 5. Set:
 
 ```env
-DATABASE_URL="postgresql://postgres.[PROJECT_REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=1"
+DATABASE_URL="postgresql://postgres.[PROJECT_REF]:[YOUR-PASSWORD]@aws-0-[REGION].pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=1"
+DATABASE_DIRECT_URL="postgresql://postgres:[YOUR-PASSWORD]@db.[PROJECT_REF].supabase.co:5432/postgres"
 NEXT_PUBLIC_SUPABASE_URL="https://[PROJECT_REF].supabase.co"
 NEXT_PUBLIC_SUPABASE_ANON_KEY=""
 ```
 
-For local development and early Supabase setup, run:
+Push the current schema to Supabase:
 
 ```bash
 npm run prisma:push
 npm run prisma:generate
+```
+
+The project also includes a Supabase-native structure in `supabase/`:
+
+```text
+supabase/
+  config.toml
+  seed.sql
+  migrations/
+    20260619000000_initial_slotwise_schema.sql
+```
+
+You can apply the Supabase migration with:
+
+```bash
+npm run supabase:db:push
 ```
 
 For production migrations, use reviewed Prisma migrations:
@@ -62,4 +80,5 @@ npm run test
 npm run build
 npm run prisma:push
 npm run prisma:generate
+npm run supabase:db:push
 ```

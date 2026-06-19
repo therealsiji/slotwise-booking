@@ -6,7 +6,7 @@ export function SetupWarning({ message }: { message?: string }) {
       <AlertTitle>Connect your database to load live scheduling data</AlertTitle>
       <AlertDescription>
         {message ||
-          "Copy .env.example to .env, set DATABASE_URL and Clerk keys, then run Prisma migrations."}
+          "Copy .env.example to .env, add your Supabase DATABASE_URL, then run npm run prisma:push."}
       </AlertDescription>
     </Alert>
   );

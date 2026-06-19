@@ -8,7 +8,8 @@ export default defineConfig({
   },
   datasource: {
     url:
+      process.env.DATABASE_DIRECT_URL ||
       process.env.DATABASE_URL ||
-      "postgresql://postgres.password@aws-0-region.pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=1",
+      "postgresql://postgres:password@db.project-ref.supabase.co:5432/postgres",
   },
 });

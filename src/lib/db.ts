@@ -1,3 +1,4 @@
+import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 import { hasDatabaseConfig } from "@/lib/env";
 
@@ -11,7 +12,11 @@ export function getDb() {
   }
 
   if (!globalForPrisma.prisma) {
-    globalForPrisma.prisma = new PrismaClient();
+    const adapter = new PrismaPg({
+      connectionString: process.env.DATABASE_URL!,
+    });
+
+    globalForPrisma.prisma = new PrismaClient({ adapter });
   }
 
   return globalForPrisma.prisma;

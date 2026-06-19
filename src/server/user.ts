@@ -63,6 +63,6 @@ export async function getCurrentSlotWiseUser() {
     });
   } catch (error) {
     console.error("User sync failed", error);
-    throw new Error("SlotWise needs a configured DATABASE_URL before dashboard data can load.");
+    throw new Error("SlotWise needs a configured Supabase DATABASE_URL before dashboard data can load.");
   }
 }
