@@ -1,5 +1,11 @@
-import { EmailStatus, EmailType, type Appointment, type User } from "@prisma/client";
+import { type Appointment, type User } from "@prisma/client";
 import { Resend } from "resend";
+import {
+  EMAIL_STATUS,
+  EMAIL_TYPE,
+  type EmailStatusValue,
+  type EmailTypeValue,
+} from "@/lib/constants";
 import { getDb } from "@/lib/db";
 
 let resend: Resend | null = null;
@@ -30,8 +36,8 @@ async function logEmail({
 }: {
   appointmentId: string;
   recipientEmail: string;
-  emailType: EmailType;
-  status: EmailStatus;
+  emailType: EmailTypeValue;
+  status: EmailStatusValue;
   providerMessageId?: string;
   errorMessage?: string;
 }) {
@@ -61,7 +67,7 @@ async function sendAppointmentEmail({
   appointment: AppointmentWithUser;
   to: string;
   subject: string;
-  emailType: EmailType;
+  emailType: EmailTypeValue;
   intro: string;
 }) {
   const formattedDate = new Intl.DateTimeFormat("en", {
@@ -77,7 +83,7 @@ async function sendAppointmentEmail({
       appointmentId: appointment.id,
       recipientEmail: to,
       emailType,
-      status: EmailStatus.SKIPPED,
+      status: EMAIL_STATUS.SKIPPED,
       errorMessage: "RESEND_API_KEY is not configured.",
     });
     return;
@@ -95,7 +101,7 @@ async function sendAppointmentEmail({
       appointmentId: appointment.id,
       recipientEmail: to,
       emailType,
-      status: EmailStatus.SENT,
+      status: EMAIL_STATUS.SENT,
       providerMessageId: response.data?.id,
     });
   } catch (error) {
@@ -103,7 +109,7 @@ async function sendAppointmentEmail({
       appointmentId: appointment.id,
       recipientEmail: to,
       emailType,
-      status: EmailStatus.FAILED,
+      status: EMAIL_STATUS.FAILED,
       errorMessage: error instanceof Error ? error.message : "Unknown email error",
     });
   }
@@ -115,14 +121,14 @@ export async function sendBookingEmails(appointment: AppointmentWithUser) {
       appointment,
       to: appointment.clientEmail,
       subject: `Confirmed: appointment with ${appointment.user.name}`,
-      emailType: EmailType.BOOKING_CONFIRMATION,
+      emailType: EMAIL_TYPE.BOOKING_CONFIRMATION,
       intro: "Your appointment is confirmed.",
     }),
     sendAppointmentEmail({
       appointment,
       to: appointment.user.email,
       subject: `New booking from ${appointment.clientName}`,
-      emailType: EmailType.PROFESSIONAL_NOTIFICATION,
+      emailType: EMAIL_TYPE.PROFESSIONAL_NOTIFICATION,
       intro: "A new appointment has been booked.",
     }),
   ]);
@@ -133,7 +139,7 @@ export async function sendCancellationEmail(appointment: AppointmentWithUser) {
     appointment,
     to: appointment.clientEmail,
     subject: `Cancelled: appointment with ${appointment.user.name}`,
-    emailType: EmailType.CANCELLATION,
+    emailType: EMAIL_TYPE.CANCELLATION,
     intro: "This appointment has been cancelled.",
   });
 }

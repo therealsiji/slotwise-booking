@@ -1,4 +1,3 @@
-import { AppointmentStatus } from "@prisma/client";
 import { CalendarX } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,6 +13,7 @@ import {
 import { demoAppointments } from "@/lib/demo-data";
 import { getDb } from "@/lib/db";
 import { hasDatabaseConfig } from "@/lib/env";
+import { APPOINTMENT_STATUS } from "@/lib/constants";
 import { cancelAppointment } from "@/server/actions";
 import { getCurrentSlotWiseUser } from "@/server/user";
 
@@ -89,7 +89,7 @@ export default async function AppointmentsPage() {
                     <TableCell>
                       <Badge
                         variant={
-                          appointment.status === AppointmentStatus.ACTIVE
+                          appointment.status === APPOINTMENT_STATUS.ACTIVE
                             ? "default"
                             : "secondary"
                         }
@@ -98,7 +98,7 @@ export default async function AppointmentsPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      {appointment.status === AppointmentStatus.ACTIVE ? (
+                      {appointment.status === APPOINTMENT_STATUS.ACTIVE ? (
                         <form action={cancelAppointment}>
                           <input
                             type="hidden"

@@ -1,10 +1,10 @@
 "use server";
 
 import { addMinutes } from "date-fns";
-import { AppointmentStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { bookingWindow, generateAvailabilitySlots, isSlotAvailable } from "@/lib/availability";
+import { APPOINTMENT_STATUS } from "@/lib/constants";
 import { getDb } from "@/lib/db";
 import { sendBookingEmails, sendCancellationEmail } from "@/lib/email";
 import {
@@ -129,7 +129,7 @@ export async function createAppointment(formData: FormData) {
   const activeAppointments = await db.appointment.findMany({
     where: {
       userId: professional.id,
-      status: AppointmentStatus.ACTIVE,
+      status: APPOINTMENT_STATUS.ACTIVE,
       startDateTime: { lte: window.end },
       endDateTime: { gte: window.start },
     },
@@ -152,7 +152,7 @@ export async function createAppointment(formData: FormData) {
     const conflicts = await tx.appointment.count({
       where: {
         userId: professional.id,
-        status: AppointmentStatus.ACTIVE,
+        status: APPOINTMENT_STATUS.ACTIVE,
         startDateTime: { lt: endDateTime },
         endDateTime: { gt: startDateTime },
       },
@@ -192,7 +192,7 @@ export async function cancelAppointment(formData: FormData) {
       id: parsed.appointmentId,
       userId: user.id,
     },
-    data: { status: AppointmentStatus.CANCELLED },
+    data: { status: APPOINTMENT_STATUS.CANCELLED },
     include: { user: true },
   });
 
@@ -209,7 +209,7 @@ export async function getPublicSlots(userId: string) {
       availabilityRules: true,
       availabilityBlocks: true,
       appointments: {
-        where: { status: AppointmentStatus.ACTIVE },
+        where: { status: APPOINTMENT_STATUS.ACTIVE },
       },
     },
   });

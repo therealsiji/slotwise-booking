@@ -1,5 +1,5 @@
 import { addDays, addHours } from "date-fns";
-import { AppointmentStatus } from "@prisma/client";
+import { APPOINTMENT_STATUS } from "@/lib/constants";
 
 const now = new Date();
 
@@ -27,7 +27,7 @@ export const demoAppointments = [
     startDateTime: addHours(addDays(now, 1), 2),
     endDateTime: addHours(addDays(now, 1), 2.5),
     timezone: demoUser.timezone,
-    status: AppointmentStatus.ACTIVE,
+    status: APPOINTMENT_STATUS.ACTIVE,
     createdAt: now,
     updatedAt: now,
   },
@@ -40,7 +40,7 @@ export const demoAppointments = [
     startDateTime: addHours(addDays(now, 2), 4),
     endDateTime: addHours(addDays(now, 2), 4.5),
     timezone: demoUser.timezone,
-    status: AppointmentStatus.ACTIVE,
+    status: APPOINTMENT_STATUS.ACTIVE,
     createdAt: now,
     updatedAt: now,
   },
