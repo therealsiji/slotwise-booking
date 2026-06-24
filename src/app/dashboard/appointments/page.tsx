@@ -1,4 +1,5 @@
 import { CalendarX } from "lucide-react";
+import { unstable_rethrow } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -45,6 +46,7 @@ async function loadAppointmentsData(): Promise<AppointmentsData> {
     });
     return { appointments };
   } catch (error) {
+    unstable_rethrow(error);
     console.warn("Appointments data unavailable, using demo data.", error);
     return { appointments: demoAppointments, isDemo: true };
   }

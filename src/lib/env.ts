@@ -8,13 +8,6 @@ function hasRealValue(value: string | undefined) {
   );
 }
 
-export function hasClerkConfig() {
-  return (
-    hasRealValue(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) &&
-    hasRealValue(process.env.CLERK_SECRET_KEY)
-  );
-}
-
 export function hasDatabaseConfig() {
   return hasRealValue(process.env.DATABASE_URL);
 }

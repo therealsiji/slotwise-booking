@@ -1,18 +1,18 @@
 import Link from "next/link";
-import { CalendarDays, Info } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { hasSupabaseConfig } from "@/lib/env";
-import { signInWithPassword } from "@/server/auth-actions";
+import { updatePassword } from "@/server/auth-actions";
 
-type SignInPageProps = {
+type ResetPasswordPageProps = {
   searchParams: Promise<{ message?: string }>;
 };
 
-export default async function SignInPage({ searchParams }: SignInPageProps) {
+export default async function ResetPasswordPage({ searchParams }: ResetPasswordPageProps) {
   const { message } = await searchParams;
 
   return (
@@ -22,53 +22,52 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
           <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <CalendarDays className="size-5" />
           </div>
-          <CardTitle className="text-2xl">Log in to SlotWise</CardTitle>
+          <CardTitle className="text-2xl">Choose a new password</CardTitle>
         </CardHeader>
         <CardContent>
           {!hasSupabaseConfig() ? (
             <Alert>
               <AlertDescription>
                 Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to
-                enable Supabase login.
+                enable password reset.
               </AlertDescription>
             </Alert>
           ) : (
-            <form action={signInWithPassword} className="grid gap-4">
+            <form action={updatePassword} className="grid gap-4">
               {message ? (
-                <div role="status" className="flex items-center gap-2 text-sm font-medium text-amber-700">
-                  <Info className="size-4 shrink-0" />
-                  <span>
-                    {message}
-                  </span>
-                </div>
+                <Alert>
+                  <AlertDescription>{message}</AlertDescription>
+                </Alert>
               ) : null}
               <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" name="email" type="email" autoComplete="email" required />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">New password</Label>
                 <Input
                   id="password"
                   name="password"
                   type="password"
-                  autoComplete="current-password"
+                  autoComplete="new-password"
+                  minLength={6}
                   required
                 />
-                <Link
-                  href="/forgot-password"
-                  className="justify-self-end text-sm font-medium text-foreground underline-offset-4 hover:underline"
-                >
-                  Forgot password?
-                </Link>
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="confirmPassword">Confirm password</Label>
+                <Input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  autoComplete="new-password"
+                  minLength={6}
+                  required
+                />
               </div>
               <Button type="submit" className="w-full">
-                Log in
+                Update password
               </Button>
               <p className="text-center text-sm text-muted-foreground">
-                New to SlotWise?{" "}
-                <Link href="/sign-up" className="font-medium text-foreground underline-offset-4 hover:underline">
-                  Create an account
+                Need another reset link?{" "}
+                <Link href="/forgot-password" className="font-medium text-foreground underline-offset-4 hover:underline">
+                  Request one
                 </Link>
               </p>
             </form>

@@ -1,4 +1,5 @@
 import { Trash2 } from "lucide-react";
+import { unstable_rethrow } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -60,6 +61,7 @@ async function loadAvailabilityData(): Promise<AvailabilityData> {
     ]);
     return { rules, blocks };
   } catch (error) {
+    unstable_rethrow(error);
     console.warn("Availability data unavailable, using demo data.", error);
     return {
       rules: demoAvailabilityRules,

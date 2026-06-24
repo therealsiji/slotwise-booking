@@ -1,4 +1,5 @@
 import { CalendarDays, Clock, Link2 } from "lucide-react";
+import { unstable_rethrow } from "next/navigation";
 import { AppointmentCalendar } from "@/components/calendar/appointment-calendar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -43,6 +44,7 @@ async function loadDashboardData(): Promise<DashboardData> {
     });
     return { user, appointments };
   } catch (error) {
+    unstable_rethrow(error);
     console.warn("Dashboard data unavailable, using demo data.", error);
     return { user: demoUser, appointments: demoAppointments, isDemo: true };
   }

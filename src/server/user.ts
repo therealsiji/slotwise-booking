@@ -1,9 +1,10 @@
 "use server";
 
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 import { demoUser } from "@/lib/demo-data";
 import { getDb } from "@/lib/db";
-import { hasClerkConfig } from "@/lib/env";
+import { hasDatabaseConfig, hasSupabaseConfig } from "@/lib/env";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 function slugify(value: string) {
   return value
@@ -15,30 +16,31 @@ function slugify(value: string) {
 }
 
 export async function getCurrentSlotWiseUser() {
-  if (!hasClerkConfig()) {
+  if (!hasSupabaseConfig() || !hasDatabaseConfig()) {
     return demoUser;
   }
 
-  const { userId, redirectToSignIn } = await auth();
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
 
-  if (!userId) {
-    return redirectToSignIn();
+  if (error || !user) {
+    redirect("/sign-in");
   }
 
-  const clerkUser = await currentUser();
-  const email =
-    clerkUser?.primaryEmailAddress?.emailAddress ||
-    clerkUser?.emailAddresses.at(0)?.emailAddress ||
-    `${userId}@example.com`;
+  const email = user.email ?? `${user.id}@example.com`;
+  const metadataName = user.user_metadata?.name;
   const name =
-    clerkUser?.fullName ||
-    [clerkUser?.firstName, clerkUser?.lastName].filter(Boolean).join(" ") ||
-    "SlotWise User";
+    typeof metadataName === "string" && metadataName.trim()
+      ? metadataName.trim()
+      : email.split("@")[0] || "SlotWise User";
   const baseSlug = slugify(name || email.split("@")[0]) || "slotwise";
 
   try {
     const db = getDb();
-    const existing = await db.user.findUnique({ where: { clerkUserId: userId } });
+    const existing = await db.user.findUnique({ where: { authUserId: user.id } });
 
     if (existing) {
       return existing;
@@ -54,15 +56,14 @@ export async function getCurrentSlotWiseUser() {
 
     return db.user.create({
       data: {
-        clerkUserId: userId,
+        authUserId: user.id,
         name,
         email,
         bookingSlug,
-        businessName: clerkUser?.publicMetadata.businessName as string | undefined,
       },
     });
-  } catch (error) {
-    console.error("User sync failed", error);
+  } catch (syncError) {
+    console.error("User sync failed", syncError);
     throw new Error("SlotWise needs a configured Supabase DATABASE_URL before dashboard data can load.");
   }
 }

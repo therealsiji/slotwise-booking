@@ -5,7 +5,7 @@ const now = new Date();
 
 export const demoUser = {
   id: "demo-user",
-  clerkUserId: "demo-clerk-user",
+  authUserId: "demo-supabase-user",
   name: "Siji Olaifa",
   email: "siji@example.com",
   businessName: "SlotWise Studio",

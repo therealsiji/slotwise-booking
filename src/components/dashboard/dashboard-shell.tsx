@@ -1,10 +1,9 @@
 import Link from "next/link";
-import { UserButton } from "@clerk/nextjs";
 import { CalendarDays, Clock, Link2, Settings } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { hasClerkConfig } from "@/lib/env";
 import { cn } from "@/lib/utils";
+import { signOut } from "@/server/auth-actions";
 
 const navItems = [
   { href: "/dashboard", label: "Calendar", icon: CalendarDays },
@@ -14,8 +13,6 @@ const navItems = [
 ];
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
-  const showClerkUser = hasClerkConfig();
-
   return (
     <div className="min-h-screen bg-muted/35">
       <header className="border-b bg-background">
@@ -33,13 +30,14 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             >
               Booking link
             </Link>
-            {showClerkUser ? (
-              <UserButton />
-            ) : (
-              <div className="flex size-8 items-center justify-center rounded-full bg-muted text-sm font-medium">
-                S
-              </div>
-            )}
+            <form action={signOut}>
+              <Button type="submit" variant="ghost" size="sm">
+                Log out
+              </Button>
+            </form>
+            <div className="flex size-8 items-center justify-center rounded-full bg-muted text-sm font-medium">
+              S
+            </div>
           </div>
         </div>
       </header>

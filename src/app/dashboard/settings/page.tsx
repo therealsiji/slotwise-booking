@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Copy, ExternalLink } from "lucide-react";
+import { unstable_rethrow } from "next/navigation";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -28,6 +29,7 @@ async function loadSettingsData() {
     const bookingUrl = `${appUrl}/book/${user.bookingSlug}`;
     return { user, bookingUrl };
   } catch (error) {
+    unstable_rethrow(error);
     console.warn("Settings data unavailable, using demo data.", error);
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
     return {
